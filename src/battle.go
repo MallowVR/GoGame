@@ -12,4 +12,5 @@ var Skills []Skill
 
 func LoadSkills() {
 	ReadJsonFile(&Skills, "skills.json")
+	WriteJsonFile(&Skills, "skills.json") // Save the file here to automatically add any fields that were missing from the config before
 }

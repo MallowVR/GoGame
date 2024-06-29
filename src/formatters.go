@@ -18,7 +18,7 @@ func currencyFormatter(_in uint64) string {
 	if silvers != 0 {
 		out = fmt.Sprint(out, silvers, " silvers ")
 	}
-	if coppers != 0 {
+	if coppers != 0 || (golds == 0 && silvers == 0) {
 		out = fmt.Sprint(out, coppers, " coppers")
 	}
 	return out

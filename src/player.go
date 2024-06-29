@@ -14,6 +14,7 @@ type times struct {
 
 type player struct {
 	ID       string
+	Name     string
 	Money    uint64
 	Crystals uint64
 	Armor    uint16
@@ -34,9 +35,9 @@ func (p *player) Initialize() {
 	p.Money = 10
 	p.Crystals = 0
 	p.Skill = 0
-	p.Weapon = 0
-	p.Armor = 0
-	p.Warding = 0
+	p.Weapon = 1
+	p.Armor = 1
+	p.Warding = 1
 }
 
 func (p *player) GetID() string {
@@ -54,6 +55,7 @@ func (p *player) loadPlayer(_userName string) {
 	if p.GetID() == "" {
 		fmt.Println("found", p.ID, "initializing player", _userName)
 		p.setID(_userName)
+		p.Initialize()
 	}
 }
 

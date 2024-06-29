@@ -14,5 +14,5 @@ var Conf Config
 
 func LoadConfig() {
 	ReadJsonFile(&Conf, "config.json")
-	WriteJsonFile(&Conf, "config.json")
+	WriteJsonFile(&Conf, "config.json") // Save the file here to automatically add any fields that were missing from the config before
 }
