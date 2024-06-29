@@ -1,0 +1,30 @@
+[
+  {
+    "Name": "Basic Attack",
+    "Healing": 0,
+    "Hits": 0,
+    "Damage": 0,
+    "Block": 0
+  },
+  {
+    "Name": "Healing Blast",
+    "Healing": 0,
+    "Hits": 0,
+    "Damage": 0,
+    "Block": 0
+  },
+  {
+    "Name": "Triple Star",
+    "Healing": 0,
+    "Hits": 0,
+    "Damage": 0,
+    "Block": 0
+  },
+  {
+    "Name": "Octo Punch",
+    "Healing": 0,
+    "Hits": 0,
+    "Damage": 0,
+    "Block": 0
+  }
+]
