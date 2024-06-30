@@ -30,6 +30,14 @@ func statsCommand(p *player, args []string) string {
 
 }
 
+func battleCommand(p *player, args []string) string {
+
+}
+
+func dailyCommand(p *player, args []string) string {
+
+}
+
 func commandHandler(p *player, args []string) string {
 	length := len(args)
 	var output string
