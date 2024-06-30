@@ -6,16 +6,40 @@ import (
 	"math"
 )
 
+type command struct {
+	name     string
+	function func(*player, []string) string
+}
+
+var commands = []command{
+	command{
+		name:     "help",
+		function: helpCommand,
+	},
+	command{
+		name:     "stats",
+		function: statsCommand,
+	},
+}
+
+func helpCommand(p *player, args []string) string {
+
+}
+
+func statsCommand(p *player, args []string) string {
+
+}
+
 func commandHandler(p *player, args []string) string {
 	length := len(args)
-	// for i := 0; i < length, i++
 	var output string
 	if length == 0 {
 		slog.Info("Unexpected no arguments")
+		return output
 	}
 	switch args[0] {
 	case "stats":
-		output = fmt.Sprint("User is "+p.Name+" money:", currencyFormatter(p.Money))
+		output = fmt.Sprint("User is "+p.Name+" money: ", currencyFormatter(p.Money))
 	case "battle":
 		p.Money += uint64(Conf.MoneyRate * float64(p.Weapon))
 		output = fmt.Sprint("Battle complete, earned ", currencyFormatter(uint64(Conf.MoneyRate*float64(p.Weapon))), ". You now have ", currencyFormatter(p.Money), "\n")
@@ -27,14 +51,16 @@ func commandHandler(p *player, args []string) string {
 			case "weapon":
 				var cost uint64 = uint64(math.Pow(2, float64(p.Weapon)))
 				if p.Money < cost {
-					output = fmt.Sprint("You cannot afford that adventurer, you need", currencyFormatter(cost), "for that upgrade")
+					output = fmt.Sprint("You cannot afford that adventurer, you need ", currencyFormatter(cost), " for that upgrade")
 				} else {
 					p.Money -= cost
 					p.Weapon += 1
-					output = fmt.Sprint("Your weapon has been upgraded to level", p.Weapon, " You have", currencyFormatter(p.Money), "remaining")
+					output = fmt.Sprint("Your weapon has been upgraded to level ", p.Weapon, " You have ", currencyFormatter(p.Money), " remaining")
 				}
 			}
 		}
+	default:
+
 	}
 
 	return output

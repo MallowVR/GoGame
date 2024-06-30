@@ -82,7 +82,7 @@ func main() {
 		return
 	}
 
-	slog.Info(botInf.Name + " is not running, press CTRL-C to exit.")
+	slog.Info(botInf.Name + " is now running, press CTRL-C to exit.")
 
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
