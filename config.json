@@ -1,7 +1,7 @@
 {
   "XPRate": 0,
-  "MoneyRate": 10,
-  "CrystalRate": 0,
+  "MoneyRate": 1,
+  "CrystalRate": 1,
   "PlayerDamageReduction": 0,
   "PlayerDamageMultiplier": 0,
   "PlayerHPMultiplier": 0,

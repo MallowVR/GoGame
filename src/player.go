@@ -5,23 +5,23 @@ import (
 	"time"
 )
 
-type times struct {
-	Daily  time.Time
-	Train  time.Time
-	Battle time.Time
-	Boss   time.Time
+type Times struct {
+	Name     string
+	LastTime time.Time
 }
 
 type player struct {
-	ID       string
-	Name     string
-	Money    uint64
-	Crystals uint64
-	Armor    uint16
-	Weapon   uint16
-	Warding  uint16
-	Skill    uint16
-	Times    times
+	ID          string
+	Name        string
+	Money       uint64
+	Crystals    uint64
+	Level       uint16
+	Armor       uint16
+	Weapon      uint16
+	Warding     uint16
+	Skill       uint16
+	DailyStreak uint64
+	Times       []Times
 }
 
 type playerInterface interface {
@@ -29,6 +29,32 @@ type playerInterface interface {
 	setID()
 	Initialize()
 	loadPlayer()
+}
+
+func (p *player) GetTime(_in string) time.Time {
+	for i := 0; i < len(p.Times); i++ {
+		if p.Times[i].Name == _in {
+			return p.Times[i].LastTime
+		}
+	}
+	p.Times = append(p.Times, Times{
+		Name: _in,
+	})
+	return time.Time{}
+}
+
+func (p *player) SetTime(_in string, _time time.Time) {
+	for i := 0; i < len(p.Times); i++ {
+		if p.Times[i].Name == _in {
+			p.Times[i].LastTime = _time
+			return
+		}
+	}
+	p.Times = append(p.Times, Times{
+		Name:     _in,
+		LastTime: _time,
+	})
+	return
 }
 
 func (p *player) Initialize() {

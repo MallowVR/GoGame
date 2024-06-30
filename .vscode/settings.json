@@ -1,0 +1,14 @@
+{
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": ".",
+                "cmd": "taskkill /IM GoGame.exe /F",
+            },
+            {
+                "match": ".",
+                "cmd": "go run ./src",
+            }
+        ]
+    }
+}

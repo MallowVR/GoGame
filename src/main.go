@@ -47,6 +47,7 @@ type botInfo struct {
 	APIKey    string
 	Name      string
 	CmdPrefix string
+	BotColor  int
 }
 
 // discord bot
@@ -111,7 +112,12 @@ func onMessageCreate(event *events.MessageCreate) {
 	message := commandHandler(&localPlayer, arguments)
 
 	if message != "" {
-		_, _ = event.Client().Rest().CreateMessage(event.ChannelID, discord.NewMessageCreateBuilder().SetContent(message).Build())
+		_, _ = event.Client().Rest().CreateMessage(event.ChannelID, discord.MessageCreate{
+			Embeds: []discord.Embed{
+				discord.NewEmbedBuilder().SetTitle(*event.Message.Author.GlobalName).SetDescription(message).SetColor(botInf.BotColor).Build(),
+			},
+		})
+		// _, _ = event.Client().Rest().CreateMessage(event.ChannelID, discord.NewMessageCreateBuilder().SetContent(message).Build())
 	}
 
 	localPlayer.savePlayer()
