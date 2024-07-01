@@ -9,10 +9,11 @@ import (
 )
 
 type cooldown struct {
-	Days    uint16
-	Hours   uint16
-	Minutes uint16
-	Seconds uint16
+	Days     uint16
+	Hours    uint16
+	Minutes  uint16
+	Seconds  uint16
+	Response string
 }
 
 type command struct {
@@ -22,48 +23,63 @@ type command struct {
 }
 
 var commands = []command{
-	command{
-		name:     "help",
-		function: helpCommand,
-	},
-	command{
+	{
 		name:     "stats",
 		function: statsCommand,
 	},
-	command{
+	{
 		name: "daily",
 		cd: cooldown{
-			Days:    1,
-			Hours:   0,
-			Minutes: 0,
-			Seconds: 0,
+			Days:     1,
+			Hours:    0,
+			Minutes:  0,
+			Seconds:  0,
+			Response: "You have already collected you Daily, come back tomorrow",
 		},
 		function: dailyCommand,
 	},
-	command{
+	{
 		name: "explore",
 		cd: cooldown{
 			Days:    0,
-			Hours:   0,
-			Minutes: 20,
+			Hours:   3,
+			Minutes: 0,
 			Seconds: 0,
 		},
 		function: exploreCommand,
 	},
-	command{
+	{
+		name: "train",
+		cd: cooldown{
+			Days:    0,
+			Hours:   0,
+			Minutes: 30,
+			Seconds: 0,
+		},
+		function: trainCommand,
+	},
+	{
 		name: "test",
 		cd: cooldown{
 			Days:    0,
 			Hours:   0,
 			Minutes: 0,
-			Seconds: 30,
+			Seconds: 0,
 		},
 		function: testCommand,
 	},
 }
 
 func helpCommand(p *player, args []string) string {
-	return "Commands:\n- stats\n- battle\n- upgrade\n- inventory\n- store\n- ability\n- re-roll\n- ascend"
+	// return "Commands:\n- stats\n- battle\n- upgrade\n- inventory\n- store\n- ability\n- re-roll\n- ascend"
+	var output string = "Commands:\n- help\n"
+	if commands == nil {
+		return output
+	}
+	for i := 0; i < len(commands); i++ {
+		output = fmt.Sprint(output, "- ", commands[i].name, "\n")
+	}
+	return output
 }
 
 func statsCommand(p *player, args []string) string {
@@ -79,34 +95,51 @@ func battleCommand(p *player, args []string) string {
 }
 
 func dailyCommand(p *player, args []string) string {
-	// currentTime := time.Now().UTC()
-	// if p.Times.Daily.Year() == currentTime.Year() && p.Times.Daily.YearDay() == currentTime.YearDay() {
-	// 	return "You have already claimed this today!\nPlease come back tomorrow!"
-	// }
-	// if p.Times.Daily.Year() != currentTime.Year() || p.Times.Daily.YearDay() != (currentTime.YearDay()-1) {
-	// 	p.DailyStreak = 1
-	// } else {
-	// 	p.DailyStreak = p.DailyStreak + 1
-	// }
-	// p.Times.Daily = currentTime
 	var money = uint64(Conf.MoneyRate * (100 * math.Log2(float64(p.DailyStreak+1))))
 	p.Money = p.Money + money
 	return fmt.Sprint("Streak: ", p.DailyStreak, "\n Claimed Daily, got ", currencyFormatter(money))
 }
 
 func exploreCommand(p *player, args []string) string {
-	// currentTime := time.Now().UTC()
-	// if currentTime.Sub(p.Times.Explore).Seconds() < 1200 {
-	// 	return fmt.Sprint("You cannot explore yet, come back in ", (20 - currentTime.Sub(p.Times.Explore).Minutes()))
-	// }
-	// p.Times.Explore = currentTime
 	var money = uint64(Conf.MoneyRate * (float64(rand.Int63n(100))))
 	p.Money = p.Money + money
 	return fmt.Sprint("Exploration complete, you got ", currencyFormatter(money))
 }
 
+func trainCommand(p *player, args []string) string {
+	var output string
+	var temp uint64
+	rng := rand.Intn(100)
+	if rng < 5 {
+		temp = uint64(Conf.XPRate) * 10
+		output = fmt.Sprint("You dragged your feet. ", temp, " xp gained")
+	} else if rng > 95 {
+		temp = uint64(Conf.XPRate) * 100
+		output = fmt.Sprint("You underwent exceptional training. ", temp, " xp gained")
+	} else {
+		temp = uint64(Conf.XPRate) * 30
+		output = fmt.Sprint("Training complete. ", temp, " xp gained")
+	}
+	if p.Experience+temp > p.Experience {
+		p.Experience = p.Experience + temp
+	}
+	if GetLevel(p.Experience) > p.Level {
+		p.Level = GetLevel(p.Experience)
+		output = fmt.Sprint(output, "\nYou leveled up! You are now level ", p.Level)
+	}
+	return output
+}
+
+var offset = 0
+
 func testCommand(p *player, args []string) string {
-	return "feedback"
+	var output string
+	// var temp uint64
+	for i := 0; i < 100 && i < len(ExpTable); i = i + 1 {
+		output = fmt.Sprint(output, i+offset+1, " ", ExpTable[i+offset], "\n")
+	}
+	offset = offset + 100
+	return output
 }
 
 func (cmd *command) coolDownCheck(p *player) bool {
@@ -147,31 +180,6 @@ func commandHandler(p *player, args []string) string {
 	if output == "" {
 		output = helpCommand(p, args)
 	}
-	// switch args[0] {
-	// case "stats":
-	// 	output = fmt.Sprint("User is "+p.Name+" money: ", currencyFormatter(p.Money))
-	// case "battle":
-	// 	p.Money += uint64(Conf.MoneyRate * float64(p.Weapon))
-	// 	output = fmt.Sprint("Battle complete, earned ", currencyFormatter(uint64(Conf.MoneyRate*float64(p.Weapon))), ". You now have ", currencyFormatter(p.Money), "\n")
-	// case "upgrade":
-	// 	if length < 2 {
-	// 		output = fmt.Sprint("Adventurer, what do you want to upgrade? \nProper input is upgrade [weapon/armor]")
-	// 	} else {
-	// 		switch args[1] {
-	// 		case "weapon":
-	// 			var cost uint64 = uint64(math.Pow(2, float64(p.Weapon)))
-	// 			if p.Money < cost {
-	// 				output = fmt.Sprint("You cannot afford that adventurer, you need ", currencyFormatter(cost), " for that upgrade")
-	// 			} else {
-	// 				p.Money -= cost
-	// 				p.Weapon += 1
-	// 				output = fmt.Sprint("Your weapon has been upgraded to level ", p.Weapon, " You have ", currencyFormatter(p.Money), " remaining")
-	// 			}
-	// 		}
-	// 	}
-	// default:
-
-	// }
 
 	return output
 }

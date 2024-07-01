@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+var ExpTable []uint64 = make([]uint64, 400)
+
 type Times struct {
 	Name     string
 	LastTime time.Time
@@ -16,6 +18,7 @@ type player struct {
 	Money       uint64
 	Crystals    uint64
 	Level       uint16
+	Experience  uint64
 	Armor       uint16
 	Weapon      uint16
 	Warding     uint16
@@ -29,6 +32,26 @@ type playerInterface interface {
 	setID()
 	Initialize()
 	loadPlayer()
+}
+
+func InitializeLevels() {
+	ExpTable[0] = 0
+	ExpTable[1] = 50
+	for i := 2; i < len(ExpTable); i++ {
+		ExpTable[i] = ExpTable[i-1] + ((ExpTable[i-1] - ExpTable[i-2]) * 11 / 10)
+		if ExpTable[i] < ExpTable[i-1] || ExpTable[i-1] == 0 {
+			ExpTable[i] = 0
+		}
+	}
+}
+
+func GetLevel(_Experience uint64) uint16 { // X = 625/62 log((y + 785)/785) + 1
+	for i := 0; i < len(ExpTable); i++ {
+		if ExpTable[i] > _Experience {
+			return uint16(i + 1)
+		}
+	}
+	return 0
 }
 
 func (p *player) GetTime(_in string) time.Time {
@@ -54,7 +77,6 @@ func (p *player) SetTime(_in string, _time time.Time) {
 		Name:     _in,
 		LastTime: _time,
 	})
-	return
 }
 
 func (p *player) Initialize() {

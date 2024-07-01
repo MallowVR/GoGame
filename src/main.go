@@ -104,6 +104,7 @@ func onMessageCreate(event *events.MessageCreate) {
 	arguments = append(arguments[:0], arguments[1:]...)
 	LoadConfig()
 	LoadSkills()
+	InitializeLevels()
 	var localPlayer player
 
 	localPlayer.loadPlayer(event.Message.Author.ID.String())
